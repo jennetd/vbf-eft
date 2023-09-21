@@ -77,7 +77,7 @@ class VBFProcessor(processor.ProcessorABC):
         q1pt_axis = hist.axis.Regular(200, 0, 1000, name="q1pt", label=r"Quark 1 $p_{T}$ [GeV]")
         q2pt_axis = hist.axis.Regular(200, 0, 1000, name="q2pt", label=r"Quark 2 $p_{T}$ [GeV]")
         hpt_axis = hist.axis.Regular(200, 0, 1000, name="hpt", label=r"Higgs $p_{T}$ [GeV]")
-        detaqq_axis = hist.axis.Regular(200, -3.15, 3.15, name="detaqq", label=r"$\Delta\eta_{qq}$")
+        detaqq_axis = hist.axis.Regular(200, -6, 6, name="detaqq", label=r"$\Delta\eta_{qq}$")
         dphiqq_axis = hist.axis.Regular(200, -3.15, 3.15, name="dphiqq", label=r"$\Delta\phi_{qq}$")
         mqq_axis = hist.axis.Regular(200, 0, 5000, name="mqq", label=r"$m_{qq}$ [GeV]")
         wc_axis = hist.axis.StrCategory([], name="wc", label="WC point", growth=True)
@@ -160,32 +160,6 @@ class VBFProcessor(processor.ProcessorABC):
         ###################
         # FILL HISTOGRAMS
         ###################
-        
-        # SM point
-        output['q1pt'].fill(q1pt=q1.pt,
-                            wc='SM',
-                            weight=weights.weight()
-                           )
-        output['q2pt'].fill(q2pt=q2.pt,
-                            wc='SM',
-                            weight=weights.weight()
-                           )
-        output['hpt'].fill(hpt=higgs.pt,
-                           wc='SM',
-                           weight=weights.weight()
-                          )         
-        output['detaqq'].fill(detaqq=detaqq,
-                              wc='SM',
-                              weight=weights.weight()
-                             )
-        output['dphiqq'].fill(dphiqq=dphiqq,
-                              wc='SM',
-                              weight=weights.weight()
-                             )
-        output['mqq'].fill(mqq=mqq,
-                           wc='SM',
-                           weight=weights.weight()
-                          )
         
         try:
             # find the event weight to be used when filling the histograms
