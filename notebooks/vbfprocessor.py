@@ -86,22 +86,35 @@ class VBFProcessor(processor.ProcessorABC):
             # Test histogram; not needed for final analysis but useful to check things are working
             "q1pt": hist.Hist(
                 q1pt_axis,
-                wc_axis),
+                wc_axis,
+                storage=hist.storage.Weight()
+            ),
             "q2pt": hist.Hist(
                 q2pt_axis,
-                wc_axis),
+                wc_axis,
+                storage=hist.storage.Weight()
+            ),
             "hpt": hist.Hist(
                 hpt_axis,
-                wc_axis),
+                wc_axis,
+                storage=hist.storage.Weight()
+            ),
             "detaqq": hist.Hist(
                 detaqq_axis,
-                wc_axis),
+                wc_axis,
+                storage=hist.storage.Weight()
+            ),
             "dphiqq": hist.Hist(
                 dphiqq_axis,
-                wc_axis),
+                wc_axis,
+                storage=hist.storage.Weight()
+            ),
             "mqq": hist.Hist(
                 mqq_axis,
-                wc_axis),
+                wc_axis,
+                storage=hist.storage.Weight()
+            ),
+            
             "EventCount": processor.value_accumulator(int),
         }
         
@@ -147,43 +160,96 @@ class VBFProcessor(processor.ProcessorABC):
         ###################
         # FILL HISTOGRAMS
         ###################
+        
+        # SM point
+        output['q1pt'].fill(q1pt=q1.pt,
+                            wc='SM',
+                            weight=weights.weight()
+                           )
+        output['q2pt'].fill(q2pt=q2.pt,
+                            wc='SM',
+                            weight=weights.weight()
+                           )
+        output['hpt'].fill(hpt=higgs.pt,
+                           wc='SM',
+                           weight=weights.weight()
+                          )         
+        output['detaqq'].fill(detaqq=detaqq,
+                              wc='SM',
+                              weight=weights.weight()
+                             )
+        output['dphiqq'].fill(dphiqq=dphiqq,
+                              wc='SM',
+                              weight=weights.weight()
+                             )
+        output['mqq'].fill(mqq=mqq,
+                           wc='SM',
+                           weight=weights.weight()
+                          )
+        
+        try:
+            # find the event weight to be used when filling the histograms
+            names = weight_names("VBF_SMEFTsim_topU3l_NP1_reweight_card.dat")
 
-        # find the event weight to be used when filling the histograms
+            for i,n in enumerate(names):
 
-        names = weight_names("VBF_SMEFTsim_topU3l_NP1_reweight_card.dat")
+                output['q1pt'].fill(q1pt=q1.pt,
+                                    wc=names[i],
+                                    weight=weights.weight()*events.LHEReweightingWeight[:,i]
+                                   )
+                output['q2pt'].fill(q2pt=q2.pt,
+                                    wc=names[i],
+                                    weight=weights.weight()*events.LHEReweightingWeight[:,i]
+                                   )
+                output['hpt'].fill(hpt=higgs.pt,
+                                   wc=names[i],
+                                   weight=weights.weight()*events.LHEReweightingWeight[:,i]
+                                  )
+                output['detaqq'].fill(detaqq=detaqq,
+                                      wc=names[i],
+                                      weight=weights.weight()*events.LHEReweightingWeight[:,i]
+                                     )
+                output['dphiqq'].fill(dphiqq=dphiqq,
+                                      wc=names[i],
+                                      weight=weights.weight()*events.LHEReweightingWeight[:,i]
+                                     )
+                output['mqq'].fill(mqq=mqq,
+                                   wc=names[i],
+                                   weight=weights.weight()*events.LHEReweightingWeight[:,i]
+                                  )
 
-        for i,n in enumerate(names):
-
+                # End if LHE weight
+                
+        except:
             output['q1pt'].fill(q1pt=q1.pt,
-                                wc=names[i],
-                                weight=weights.weight()*events.LHEReweightingWeight[:,i]
+                                wc='SM',
+                                weight=weights.weight()
                                )
             output['q2pt'].fill(q2pt=q2.pt,
-                                wc=names[i],
-                                weight=weights.weight()*events.LHEReweightingWeight[:,i]
+                                wc='SM',
+                                weight=weights.weight()
                                )
             output['hpt'].fill(hpt=higgs.pt,
-                               wc=names[i],
-                               weight=weights.weight()*events.LHEReweightingWeight[:,i]
-                              )
-                        
+                               wc='SM',
+                               weight=weights.weight()
+                               )
             output['detaqq'].fill(detaqq=detaqq,
-                                  wc=names[i],
-                                  weight=weights.weight()*events.LHEReweightingWeight[:,i]
-                                 )
-            
+                                  wc='SM',
+                                  weight=weights.weight()
+                                  )
             output['dphiqq'].fill(dphiqq=dphiqq,
-                                  wc=names[i],
-                                  weight=weights.weight()*events.LHEReweightingWeight[:,i]
+                                  wc='SM',
+                                  weight=weights.weight()
                                  )
-            
             output['mqq'].fill(mqq=mqq,
-                                  wc=names[i],
-                                  weight=weights.weight()*events.LHEReweightingWeight[:,i]
-                                 )
-
-            output["EventCount"] = len(events)
-
+                               wc='SM',
+                               weight=weights.weight()
+                              )
+            
+        # End if no LHE weight
+    
+        output["EventCount"] = len(events)
+    
         return output
 
     def postprocess(self, accumulator):
